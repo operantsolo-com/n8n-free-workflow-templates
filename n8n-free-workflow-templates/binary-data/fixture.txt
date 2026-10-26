@@ -1,3 +1,0 @@
-OperantSolo binary lab
-record_id: B001
-status: ready
