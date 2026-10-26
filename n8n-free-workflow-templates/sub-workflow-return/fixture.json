@@ -1,0 +1,10 @@
+[
+  {
+    "request_id": "SUB001",
+    "email": " ADA@EXAMPLE.TEST "
+  },
+  {
+    "request_id": "SUB002",
+    "email": "Ben@Example.Test"
+  }
+]

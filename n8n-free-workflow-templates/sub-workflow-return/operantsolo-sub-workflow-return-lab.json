@@ -1,0 +1,102 @@
+{
+  "name": "OperantSolo - Sub-workflow return learning lab",
+  "active": false,
+  "nodes": [
+    {
+      "id": "manual",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "parameters": {},
+      "position": [
+        100,
+        300
+      ]
+    },
+    {
+      "id": "sample",
+      "name": "Sample requests",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "return [{\"request_id\":\"SUB001\",\"email\":\" ADA@EXAMPLE.TEST \"},{\"request_id\":\"SUB002\",\"email\":\"Ben@Example.Test\"}].map(json => ({json}));"
+      },
+      "position": [
+        340,
+        300
+      ]
+    },
+    {
+      "id": "call-child",
+      "name": "Call return child",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "parameters": {
+        "source": "parameter",
+        "workflowJson": "{\"name\":\"OperantSolo - Return contract child\",\"active\":false,\"nodes\":[{\"id\":\"sub-trigger\",\"name\":\"When Executed by Another Workflow\",\"type\":\"n8n-nodes-base.executeWorkflowTrigger\",\"typeVersion\":1.1,\"parameters\":{\"inputSource\":\"passthrough\"},\"position\":[100,300]},{\"id\":\"return-result\",\"name\":\"Return checked result\",\"type\":\"n8n-nodes-base.code\",\"typeVersion\":2,\"parameters\":{\"mode\":\"runOnceForAllItems\",\"jsCode\":\"const items = $input.all();\\nreturn items.map((item, index) => ({\\n  json: {\\n    request_id: item.json.request_id,\\n    normalized_email: String(item.json.email ?? '').trim().toLowerCase(),\\n    ok: true,\\n    child_batch_size: items.length,\\n  },\\n  pairedItem: { item: index },\\n}));\"},\"position\":[380,300]}],\"connections\":{\"When Executed by Another Workflow\":{\"main\":[[{\"node\":\"Return checked result\",\"type\":\"main\",\"index\":0}]]}},\"settings\":{\"executionOrder\":\"v1\"},\"pinData\":{}}",
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "position": [
+        580,
+        300
+      ]
+    },
+    {
+      "id": "checker",
+      "name": "Check returned contract",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const expected = $('Sample requests').all().map(item => item.json);\nconst rows = $input.all().map(item => item.json);\nconst ids = rows.map(row => row.request_id);\nconst missing = expected.filter(item => !ids.includes(item.request_id)).map(item => item.request_id);\nconst valid = rows.every(row => {\n  const original = expected.find(item => item.request_id === row.request_id);\n  return original && row.ok === true && row.normalized_email === original.email.trim().toLowerCase();\n});\nreturn [{json:{passed:rows.length === expected.length && new Set(ids).size === expected.length && missing.length === 0 && valid, expected_count:expected.length, returned_count:rows.length, returned_ids:ids, missing_ids:missing, normalized_emails:rows.map(row => row.normalized_email ?? null), child_batch_sizes:rows.map(row => row.child_batch_size ?? null)}}];"
+      },
+      "position": [
+        820,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Sample requests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sample requests": {
+      "main": [
+        [
+          {
+            "node": "Call return child",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call return child": {
+      "main": [
+        [
+          {
+            "node": "Check returned contract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

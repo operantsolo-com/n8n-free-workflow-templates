@@ -1,0 +1,267 @@
+{
+  "name": "OperantSolo - 429 Retry-After loop - offline demo",
+  "nodes": [
+    {
+      "id": "run-loop-demo",
+      "name": "Run loop demo",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "parameters": {},
+      "position": [
+        120,
+        360
+      ]
+    },
+    {
+      "id": "prepare-demo-job",
+      "name": "Prepare demo job",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "return [{json:{attempt:1,maxAttempts:4,baseSeconds:2,maxInlineSeconds:300,safeToRetry:true,request:{method:'GET',jobId:'offline-demo-001'},history:[]}}];"
+      },
+      "position": [
+        340,
+        360
+      ]
+    },
+    {
+      "id": "simulate-429-then-200",
+      "name": "Simulate 429 then 200",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "return $input.all().map(({json:j},i)=>({json:j.attempt===1?{statusCode:429,headers:{'retry-after':'2'}}:{statusCode:200,headers:{},body:{ok:true}},pairedItem:{item:i}}));"
+      },
+      "position": [
+        780,
+        280
+      ]
+    },
+    {
+      "id": "decide-next-step",
+      "name": "Decide next step",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "function retryPolicy(job, nowMs = Date.now(), random = Math.random) {\n  const response = job.response || {};\n  const status = Number(response.statusCode);\n  const attempt = Number(job.attempt);\n  const maxAttempts = Number(job.maxAttempts ?? 4);\n  const baseSeconds = Number(job.baseSeconds ?? 2);\n  const maxInlineSeconds = Number(job.maxInlineSeconds ?? 300);\n  if (!Number.isInteger(attempt) || attempt < 1 ||\n      !Number.isInteger(maxAttempts) || maxAttempts < 1 ||\n      !Number.isFinite(baseSeconds) || baseSeconds < 1 ||\n      !Number.isFinite(maxInlineSeconds) || maxInlineSeconds < 1 ||\n      !Number.isFinite(nowMs)) throw new Error('Invalid retry configuration');\n  const result = (decision, reason, waitSeconds = 0, extra = {}) => ({\n    ...job, decision, reason, waitSeconds, ...extra,\n  });\n  if (status >= 200 && status < 300) return result('success', 'http_success');\n  if (status !== 429) return result('stop', 'not_a_429');\n  if (job.safeToRetry !== true) return result('review', 'repeat_not_confirmed_safe');\n  if (attempt >= maxAttempts) return result('stop', 'attempt_budget_exhausted');\n  const headers = Object.fromEntries(Object.entries(response.headers || {})\n    .map(([key, value]) => [key.toLowerCase(), value]));\n  const raw = headers['retry-after'];\n  let providerSeconds = null;\n  let source = 'fallback_backoff';\n  if (typeof raw === 'string' || typeof raw === 'number') {\n    const value = String(raw).trim();\n    if (/^\\d+$/.test(value)) {\n      providerSeconds = Number(value);\n      source = 'retry_after_seconds';\n    } else if (/^(?:[A-Za-z]{3},\\s*\\d{1,2}\\s+[A-Za-z]{3}\\s+\\d{4}|[A-Za-z]+,\\s*\\d{2}-[A-Za-z]{3}-\\d{2}|[A-Za-z]{3}\\s+[A-Za-z]{3}\\s+\\d{1,2}\\s)/.test(value)) {\n      const retryAt = Date.parse(value);\n      if (Number.isFinite(retryAt)) {\n        // Using the response Date as well is conservative when clocks differ.\n        const serverNow = Date.parse(String(headers.date || ''));\n        const reference = Number.isFinite(serverNow) ? Math.min(nowMs, serverNow) : nowMs;\n        providerSeconds = Math.max(0, Math.ceil((retryAt - reference) / 1000));\n        source = 'retry_after_http_date';\n      }\n    }\n  }\n  if (!Number.isFinite(providerSeconds)) providerSeconds = null;\n  const fallback = Math.min(60, baseSeconds * 2 ** Math.min(attempt - 1, 20));\n  const minimumSeconds = Math.max(1, Math.ceil(providerSeconds ?? fallback));\n  const jitterSeconds = Math.min(1, Math.max(0, Number(random()) || 0));\n  // Add jitter AFTER the provider floor; never multiply that floor down.\n  const waitSeconds = Math.ceil(minimumSeconds + jitterSeconds);\n  const notBefore = new Date(nowMs + waitSeconds * 1000).toISOString();\n  const extra = { minimumSeconds, source, notBefore, nextAttempt: attempt + 1 };\n  if (waitSeconds > maxInlineSeconds) return result('defer', 'wait_exceeds_inline_budget', waitSeconds, extra);\n  return result('retry', 'within_budget', waitSeconds, extra);\n}\nreturn $input.all().map(({json})=>({json:retryPolicy(json,Date.now(),()=>0)}));"
+      },
+      "position": [
+        1220,
+        280
+      ]
+    },
+    {
+      "id": "retry-allowed",
+      "name": "Retry allowed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "retry-check",
+              "leftValue": "={{ $json.decision }}",
+              "rightValue": "retry",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "position": [
+        1440,
+        280
+      ]
+    },
+    {
+      "id": "wait-provider-interval",
+      "name": "Wait provider interval",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "parameters": {
+        "amount": "={{ $json.waitSeconds }}",
+        "unit": "seconds"
+      },
+      "position": [
+        1660,
+        160
+      ]
+    },
+    {
+      "id": "advance-attempt",
+      "name": "Advance attempt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "return $input.all().map(({json:j})=>({json:{...j,attempt:j.nextAttempt}}));"
+      },
+      "position": [
+        1880,
+        160
+      ]
+    },
+    {
+      "id": "check-loop-outcome",
+      "name": "Check loop outcome",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "const j=$input.first().json; const gap=(Date.parse(j.history[1]?.at)-Date.parse(j.history[0]?.at))/1000; if(j.decision!=='success'||j.attempt!==2||j.history.length!==2||gap<2)throw new Error('Loop demo failed'); return [{json:{result:'PASS',attempts:j.attempt,statuses:j.history.map(h=>h.statusCode),minimumWaitSeconds:2,observedGapSeconds:gap,jobId:j.request.jobId,note:'Simulated response data; real n8n Wait node; no external API called'}}];"
+      },
+      "position": [
+        1660,
+        440
+      ]
+    },
+    {
+      "id": "request-context",
+      "name": "Request context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "return $input.all();"
+      },
+      "position": [
+        560,
+        360
+      ]
+    },
+    {
+      "id": "attach-response",
+      "name": "Attach response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "return $input.all().map((item,i)=>{const j=$('Request context').itemMatching(i).json;return {json:{...j,response:item.json,history:[...j.history,{attempt:j.attempt,statusCode:item.json.statusCode,at:new Date().toISOString()}]},pairedItem:{item:i}};});"
+      },
+      "position": [
+        1000,
+        280
+      ]
+    }
+  ],
+  "connections": {
+    "Run loop demo": {
+      "main": [
+        [
+          {
+            "node": "Prepare demo job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare demo job": {
+      "main": [
+        [
+          {
+            "node": "Request context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simulate 429 then 200": {
+      "main": [
+        [
+          {
+            "node": "Attach response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decide next step": {
+      "main": [
+        [
+          {
+            "node": "Retry allowed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Request context": {
+      "main": [
+        [
+          {
+            "node": "Simulate 429 then 200",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach response": {
+      "main": [
+        [
+          {
+            "node": "Decide next step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retry allowed": {
+      "main": [
+        [
+          {
+            "node": "Wait provider interval",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check loop outcome",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait provider interval": {
+      "main": [
+        [
+          {
+            "node": "Advance attempt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Advance attempt": {
+      "main": [
+        [
+          {
+            "node": "Request context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "pinData": {}
+}

@@ -1,0 +1,150 @@
+{
+  "fixtureCases": 18,
+  "jitterChecks": 28,
+  "results": [
+    {
+      "case": "seconds header",
+      "decision": "retry",
+      "waitSeconds": 31,
+      "source": "retry_after_seconds",
+      "payloadPreserved": true,
+      "pass": true
+    },
+    {
+      "case": "mixed-case header",
+      "decision": "retry",
+      "waitSeconds": 6,
+      "source": "retry_after_seconds",
+      "payloadPreserved": true,
+      "pass": true
+    },
+    {
+      "case": "HTTP date",
+      "decision": "retry",
+      "waitSeconds": 31,
+      "source": "retry_after_http_date",
+      "payloadPreserved": true,
+      "pass": true
+    },
+    {
+      "case": "server clock behind",
+      "decision": "retry",
+      "waitSeconds": 41,
+      "source": "retry_after_http_date",
+      "payloadPreserved": true,
+      "pass": true
+    },
+    {
+      "case": "past date",
+      "decision": "retry",
+      "waitSeconds": 2,
+      "source": "retry_after_http_date",
+      "payloadPreserved": true,
+      "pass": true
+    },
+    {
+      "case": "zero seconds",
+      "decision": "retry",
+      "waitSeconds": 2,
+      "source": "retry_after_seconds",
+      "payloadPreserved": true,
+      "pass": true
+    },
+    {
+      "case": "missing header",
+      "decision": "retry",
+      "waitSeconds": 3,
+      "source": "fallback_backoff",
+      "payloadPreserved": true,
+      "pass": true
+    },
+    {
+      "case": "malformed header",
+      "decision": "retry",
+      "waitSeconds": 3,
+      "source": "fallback_backoff",
+      "payloadPreserved": true,
+      "pass": true
+    },
+    {
+      "case": "negative header",
+      "decision": "retry",
+      "waitSeconds": 3,
+      "source": "fallback_backoff",
+      "payloadPreserved": true,
+      "pass": true
+    },
+    {
+      "case": "fractional header",
+      "decision": "retry",
+      "waitSeconds": 3,
+      "source": "fallback_backoff",
+      "payloadPreserved": true,
+      "pass": true
+    },
+    {
+      "case": "second attempt",
+      "decision": "retry",
+      "waitSeconds": 5,
+      "source": "fallback_backoff",
+      "payloadPreserved": true,
+      "pass": true
+    },
+    {
+      "case": "third attempt",
+      "decision": "retry",
+      "waitSeconds": 9,
+      "source": "fallback_backoff",
+      "payloadPreserved": true,
+      "pass": true
+    },
+    {
+      "case": "attempt cap",
+      "decision": "stop",
+      "waitSeconds": 0,
+      "source": "",
+      "payloadPreserved": true,
+      "pass": true
+    },
+    {
+      "case": "long provider wait",
+      "decision": "defer",
+      "waitSeconds": 3601,
+      "source": "retry_after_seconds",
+      "payloadPreserved": true,
+      "pass": true
+    },
+    {
+      "case": "unsafe write",
+      "decision": "review",
+      "waitSeconds": 0,
+      "source": "",
+      "payloadPreserved": true,
+      "pass": true
+    },
+    {
+      "case": "auth error",
+      "decision": "stop",
+      "waitSeconds": 0,
+      "source": "",
+      "payloadPreserved": true,
+      "pass": true
+    },
+    {
+      "case": "server error outside scope",
+      "decision": "stop",
+      "waitSeconds": 0,
+      "source": "",
+      "payloadPreserved": true,
+      "pass": true
+    },
+    {
+      "case": "success",
+      "decision": "success",
+      "waitSeconds": 0,
+      "source": "",
+      "payloadPreserved": true,
+      "pass": true
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "name": "  Ada Lovelace  ",
+  "email": " ADA@EXAMPLE.COM ",
+  "message": "red, green, blue",
+  "slug": "Workflow Lab",
+  "url": "https://example.com/docs?a=1",
+  "amount": "12.50",
+  "count": 0,
+  "enabled": false,
+  "status": "paid",
+  "date": "2026-10-08T10:30:00Z",
+  "localDate": "08/10/2026",
+  "unix": 1791455400,
+  "tags": [
+    "n8n",
+    "api",
+    "n8n"
+  ],
+  "numbers": [
+    3,
+    1,
+    2
+  ],
+  "items": [
+    {
+      "name": "A",
+      "active": true,
+      "price": 10
+    },
+    {
+      "name": "B",
+      "active": false,
+      "price": 20
+    },
+    {
+      "name": "C",
+      "active": true,
+      "price": 5
+    }
+  ],
+  "customer": {
+    "name": "Ada",
+    "address": {
+      "city": "London"
+    }
+  },
+  "body": {
+    "post_id": 42
+  },
+  "platform": "linkedin",
+  "account_id": "demo",
+  "optional": null,
+  "empty": ""
+}

@@ -1,0 +1,27 @@
+[
+  {
+    "record_id": "R001",
+    "name": "Ada",
+    "status": "new"
+  },
+  {
+    "record_id": "R002",
+    "name": "Ben",
+    "status": "new"
+  },
+  {
+    "record_id": "R003",
+    "name": "Cara",
+    "status": "new"
+  },
+  {
+    "record_id": "R004",
+    "name": "Dev",
+    "status": "new"
+  },
+  {
+    "record_id": "R005",
+    "name": "Eva",
+    "status": "new"
+  }
+]

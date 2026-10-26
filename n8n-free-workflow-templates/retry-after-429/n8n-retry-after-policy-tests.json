@@ -1,0 +1,95 @@
+{
+  "name": "OperantSolo - Retry-After policy lab - 18 fixtures",
+  "nodes": [
+    {
+      "id": "run-policy-tests",
+      "name": "Run policy tests",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "parameters": {},
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "id": "18-response-fixtures",
+      "name": "18 response fixtures",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "return [{\"name\":\"seconds header\",\"nowMs\":1791367200000,\"attempt\":1,\"maxAttempts\":4,\"baseSeconds\":2,\"maxInlineSeconds\":300,\"safeToRetry\":true,\"request\":{\"method\":\"GET\",\"url\":\"https://example.invalid/items\",\"jobId\":\"fixture-001\"},\"response\":{\"statusCode\":429,\"headers\":{\"retry-after\":\"30\"}},\"expected\":{\"decision\":\"retry\",\"waitSeconds\":31}},{\"name\":\"mixed-case header\",\"nowMs\":1791367200000,\"attempt\":1,\"maxAttempts\":4,\"baseSeconds\":2,\"maxInlineSeconds\":300,\"safeToRetry\":true,\"request\":{\"method\":\"GET\",\"url\":\"https://example.invalid/items\",\"jobId\":\"fixture-001\"},\"response\":{\"statusCode\":429,\"headers\":{\"Retry-After\":\"5\"}},\"expected\":{\"decision\":\"retry\",\"waitSeconds\":6}},{\"name\":\"HTTP date\",\"nowMs\":1791367200000,\"attempt\":1,\"maxAttempts\":4,\"baseSeconds\":2,\"maxInlineSeconds\":300,\"safeToRetry\":true,\"request\":{\"method\":\"GET\",\"url\":\"https://example.invalid/items\",\"jobId\":\"fixture-001\"},\"response\":{\"statusCode\":429,\"headers\":{\"retry-after\":\"Wed, 07 Oct 2026 10:00:30 GMT\"}},\"expected\":{\"decision\":\"retry\",\"waitSeconds\":31}},{\"name\":\"server clock behind\",\"nowMs\":1791367200000,\"attempt\":1,\"maxAttempts\":4,\"baseSeconds\":2,\"maxInlineSeconds\":300,\"safeToRetry\":true,\"request\":{\"method\":\"GET\",\"url\":\"https://example.invalid/items\",\"jobId\":\"fixture-001\"},\"response\":{\"statusCode\":429,\"headers\":{\"retry-after\":\"Wed, 07 Oct 2026 10:00:30 GMT\",\"date\":\"Wed, 07 Oct 2026 09:59:50 GMT\"}},\"expected\":{\"decision\":\"retry\",\"waitSeconds\":41}},{\"name\":\"past date\",\"nowMs\":1791367200000,\"attempt\":1,\"maxAttempts\":4,\"baseSeconds\":2,\"maxInlineSeconds\":300,\"safeToRetry\":true,\"request\":{\"method\":\"GET\",\"url\":\"https://example.invalid/items\",\"jobId\":\"fixture-001\"},\"response\":{\"statusCode\":429,\"headers\":{\"retry-after\":\"Wed, 07 Oct 2026 09:59:00 GMT\"}},\"expected\":{\"decision\":\"retry\",\"waitSeconds\":2}},{\"name\":\"zero seconds\",\"nowMs\":1791367200000,\"attempt\":1,\"maxAttempts\":4,\"baseSeconds\":2,\"maxInlineSeconds\":300,\"safeToRetry\":true,\"request\":{\"method\":\"GET\",\"url\":\"https://example.invalid/items\",\"jobId\":\"fixture-001\"},\"response\":{\"statusCode\":429,\"headers\":{\"retry-after\":\"0\"}},\"expected\":{\"decision\":\"retry\",\"waitSeconds\":2}},{\"name\":\"missing header\",\"nowMs\":1791367200000,\"attempt\":1,\"maxAttempts\":4,\"baseSeconds\":2,\"maxInlineSeconds\":300,\"safeToRetry\":true,\"request\":{\"method\":\"GET\",\"url\":\"https://example.invalid/items\",\"jobId\":\"fixture-001\"},\"response\":{\"statusCode\":429,\"headers\":{}},\"expected\":{\"decision\":\"retry\",\"waitSeconds\":3}},{\"name\":\"malformed header\",\"nowMs\":1791367200000,\"attempt\":1,\"maxAttempts\":4,\"baseSeconds\":2,\"maxInlineSeconds\":300,\"safeToRetry\":true,\"request\":{\"method\":\"GET\",\"url\":\"https://example.invalid/items\",\"jobId\":\"fixture-001\"},\"response\":{\"statusCode\":429,\"headers\":{\"retry-after\":\"banana\"}},\"expected\":{\"decision\":\"retry\",\"waitSeconds\":3}},{\"name\":\"negative header\",\"nowMs\":1791367200000,\"attempt\":1,\"maxAttempts\":4,\"baseSeconds\":2,\"maxInlineSeconds\":300,\"safeToRetry\":true,\"request\":{\"method\":\"GET\",\"url\":\"https://example.invalid/items\",\"jobId\":\"fixture-001\"},\"response\":{\"statusCode\":429,\"headers\":{\"retry-after\":\"-1\"}},\"expected\":{\"decision\":\"retry\",\"waitSeconds\":3}},{\"name\":\"fractional header\",\"nowMs\":1791367200000,\"attempt\":1,\"maxAttempts\":4,\"baseSeconds\":2,\"maxInlineSeconds\":300,\"safeToRetry\":true,\"request\":{\"method\":\"GET\",\"url\":\"https://example.invalid/items\",\"jobId\":\"fixture-001\"},\"response\":{\"statusCode\":429,\"headers\":{\"retry-after\":\"1.5\"}},\"expected\":{\"decision\":\"retry\",\"waitSeconds\":3}},{\"name\":\"second attempt\",\"nowMs\":1791367200000,\"attempt\":2,\"maxAttempts\":4,\"baseSeconds\":2,\"maxInlineSeconds\":300,\"safeToRetry\":true,\"request\":{\"method\":\"GET\",\"url\":\"https://example.invalid/items\",\"jobId\":\"fixture-001\"},\"response\":{\"statusCode\":429,\"headers\":{}},\"expected\":{\"decision\":\"retry\",\"waitSeconds\":5}},{\"name\":\"third attempt\",\"nowMs\":1791367200000,\"attempt\":3,\"maxAttempts\":4,\"baseSeconds\":2,\"maxInlineSeconds\":300,\"safeToRetry\":true,\"request\":{\"method\":\"GET\",\"url\":\"https://example.invalid/items\",\"jobId\":\"fixture-001\"},\"response\":{\"statusCode\":429,\"headers\":{}},\"expected\":{\"decision\":\"retry\",\"waitSeconds\":9}},{\"name\":\"attempt cap\",\"nowMs\":1791367200000,\"attempt\":4,\"maxAttempts\":4,\"baseSeconds\":2,\"maxInlineSeconds\":300,\"safeToRetry\":true,\"request\":{\"method\":\"GET\",\"url\":\"https://example.invalid/items\",\"jobId\":\"fixture-001\"},\"response\":{\"statusCode\":429,\"headers\":{\"retry-after\":\"30\"}},\"expected\":{\"decision\":\"stop\",\"waitSeconds\":0}},{\"name\":\"long provider wait\",\"nowMs\":1791367200000,\"attempt\":1,\"maxAttempts\":4,\"baseSeconds\":2,\"maxInlineSeconds\":300,\"safeToRetry\":true,\"request\":{\"method\":\"GET\",\"url\":\"https://example.invalid/items\",\"jobId\":\"fixture-001\"},\"response\":{\"statusCode\":429,\"headers\":{\"retry-after\":\"3600\"}},\"expected\":{\"decision\":\"defer\",\"waitSeconds\":3601}},{\"name\":\"unsafe write\",\"nowMs\":1791367200000,\"attempt\":1,\"maxAttempts\":4,\"baseSeconds\":2,\"maxInlineSeconds\":300,\"safeToRetry\":false,\"request\":{\"method\":\"POST\",\"jobId\":\"fixture-write\"},\"response\":{\"statusCode\":429,\"headers\":{\"retry-after\":\"30\"}},\"expected\":{\"decision\":\"review\",\"waitSeconds\":0}},{\"name\":\"auth error\",\"nowMs\":1791367200000,\"attempt\":1,\"maxAttempts\":4,\"baseSeconds\":2,\"maxInlineSeconds\":300,\"safeToRetry\":true,\"request\":{\"method\":\"GET\",\"url\":\"https://example.invalid/items\",\"jobId\":\"fixture-001\"},\"response\":{\"statusCode\":401,\"headers\":{}},\"expected\":{\"decision\":\"stop\",\"waitSeconds\":0}},{\"name\":\"server error outside scope\",\"nowMs\":1791367200000,\"attempt\":1,\"maxAttempts\":4,\"baseSeconds\":2,\"maxInlineSeconds\":300,\"safeToRetry\":true,\"request\":{\"method\":\"GET\",\"url\":\"https://example.invalid/items\",\"jobId\":\"fixture-001\"},\"response\":{\"statusCode\":503,\"headers\":{\"retry-after\":\"30\"}},\"expected\":{\"decision\":\"stop\",\"waitSeconds\":0}},{\"name\":\"success\",\"nowMs\":1791367200000,\"attempt\":4,\"maxAttempts\":4,\"baseSeconds\":2,\"maxInlineSeconds\":300,\"safeToRetry\":true,\"request\":{\"method\":\"GET\",\"url\":\"https://example.invalid/items\",\"jobId\":\"fixture-001\"},\"response\":{\"statusCode\":200,\"headers\":{},\"body\":{\"ok\":true}},\"expected\":{\"decision\":\"success\",\"waitSeconds\":0}}].map(json => ({json}));"
+      },
+      "position": [
+        440,
+        300
+      ]
+    },
+    {
+      "id": "evaluate-retry-policy",
+      "name": "Evaluate retry policy",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "function retryPolicy(job, nowMs = Date.now(), random = Math.random) {\n  const response = job.response || {};\n  const status = Number(response.statusCode);\n  const attempt = Number(job.attempt);\n  const maxAttempts = Number(job.maxAttempts ?? 4);\n  const baseSeconds = Number(job.baseSeconds ?? 2);\n  const maxInlineSeconds = Number(job.maxInlineSeconds ?? 300);\n  if (!Number.isInteger(attempt) || attempt < 1 ||\n      !Number.isInteger(maxAttempts) || maxAttempts < 1 ||\n      !Number.isFinite(baseSeconds) || baseSeconds < 1 ||\n      !Number.isFinite(maxInlineSeconds) || maxInlineSeconds < 1 ||\n      !Number.isFinite(nowMs)) throw new Error('Invalid retry configuration');\n  const result = (decision, reason, waitSeconds = 0, extra = {}) => ({\n    ...job, decision, reason, waitSeconds, ...extra,\n  });\n  if (status >= 200 && status < 300) return result('success', 'http_success');\n  if (status !== 429) return result('stop', 'not_a_429');\n  if (job.safeToRetry !== true) return result('review', 'repeat_not_confirmed_safe');\n  if (attempt >= maxAttempts) return result('stop', 'attempt_budget_exhausted');\n  const headers = Object.fromEntries(Object.entries(response.headers || {})\n    .map(([key, value]) => [key.toLowerCase(), value]));\n  const raw = headers['retry-after'];\n  let providerSeconds = null;\n  let source = 'fallback_backoff';\n  if (typeof raw === 'string' || typeof raw === 'number') {\n    const value = String(raw).trim();\n    if (/^\\d+$/.test(value)) {\n      providerSeconds = Number(value);\n      source = 'retry_after_seconds';\n    } else if (/^(?:[A-Za-z]{3},\\s*\\d{1,2}\\s+[A-Za-z]{3}\\s+\\d{4}|[A-Za-z]+,\\s*\\d{2}-[A-Za-z]{3}-\\d{2}|[A-Za-z]{3}\\s+[A-Za-z]{3}\\s+\\d{1,2}\\s)/.test(value)) {\n      const retryAt = Date.parse(value);\n      if (Number.isFinite(retryAt)) {\n        // Using the response Date as well is conservative when clocks differ.\n        const serverNow = Date.parse(String(headers.date || ''));\n        const reference = Number.isFinite(serverNow) ? Math.min(nowMs, serverNow) : nowMs;\n        providerSeconds = Math.max(0, Math.ceil((retryAt - reference) / 1000));\n        source = 'retry_after_http_date';\n      }\n    }\n  }\n  if (!Number.isFinite(providerSeconds)) providerSeconds = null;\n  const fallback = Math.min(60, baseSeconds * 2 ** Math.min(attempt - 1, 20));\n  const minimumSeconds = Math.max(1, Math.ceil(providerSeconds ?? fallback));\n  const jitterSeconds = Math.min(1, Math.max(0, Number(random()) || 0));\n  // Add jitter AFTER the provider floor; never multiply that floor down.\n  const waitSeconds = Math.ceil(minimumSeconds + jitterSeconds);\n  const notBefore = new Date(nowMs + waitSeconds * 1000).toISOString();\n  const extra = { minimumSeconds, source, notBefore, nextAttempt: attempt + 1 };\n  if (waitSeconds > maxInlineSeconds) return result('defer', 'wait_exceeds_inline_budget', waitSeconds, extra);\n  return result('retry', 'within_budget', waitSeconds, extra);\n}\nreturn $input.all().map(item => ({json: retryPolicy(item.json,item.json.nowMs,()=>0.5)}));"
+      },
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "id": "assert-18-results",
+      "name": "Assert 18 results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "const rows=$input.all().map(i=>i.json);\nconst results=rows.map(r=>({case:r.name,decision:r.decision,waitSeconds:r.waitSeconds,expected:r.expected,source:r.source||'',pass:r.decision===r.expected.decision&&r.waitSeconds===r.expected.waitSeconds}));\nif(results.length!==18||results.some(r=>!r.pass))throw new Error('Policy fixture failure');\nreturn [{json:{result:'PASS',cases:18,passed:18,failed:0,note:'Synthetic response fixtures; no live API requests or real waits',results}}];"
+      },
+      "position": [
+        920,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Run policy tests": {
+      "main": [
+        [
+          {
+            "node": "18 response fixtures",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "18 response fixtures": {
+      "main": [
+        [
+          {
+            "node": "Evaluate retry policy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate retry policy": {
+      "main": [
+        [
+          {
+            "node": "Assert 18 results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "pinData": {}
+}

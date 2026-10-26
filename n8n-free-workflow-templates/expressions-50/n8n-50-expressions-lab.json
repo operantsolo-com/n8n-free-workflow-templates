@@ -1,0 +1,402 @@
+{
+  "name": "OperantSolo 50 expressions lab",
+  "nodes": [
+    {
+      "id": "manual",
+      "name": "Run lab",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "fixture",
+      "name": "Sample input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ],
+      "parameters": {
+        "jsCode": "return [{json:{\"name\":\"  Ada Lovelace  \",\"email\":\" ADA@EXAMPLE.COM \",\"message\":\"red, green, blue\",\"slug\":\"Workflow Lab\",\"url\":\"https://example.com/docs?a=1\",\"amount\":\"12.50\",\"count\":0,\"enabled\":false,\"status\":\"paid\",\"date\":\"2026-10-08T10:30:00Z\",\"localDate\":\"08/10/2026\",\"unix\":1791455400,\"tags\":[\"n8n\",\"api\",\"n8n\"],\"numbers\":[3,1,2],\"items\":[{\"name\":\"A\",\"active\":true,\"price\":10},{\"name\":\"B\",\"active\":false,\"price\":20},{\"name\":\"C\",\"active\":true,\"price\":5}],\"customer\":{\"name\":\"Ada\",\"address\":{\"city\":\"London\"}},\"body\":{\"post_id\":42},\"platform\":\"linkedin\",\"account_id\":\"demo\",\"optional\":null,\"empty\":\"\"}}];"
+      }
+    },
+    {
+      "id": "expressions",
+      "name": "Evaluate 50 expressions",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        520,
+        0
+      ],
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e01",
+              "name": "e01",
+              "value": "={{ JSON.stringify($json.customer.name) }}",
+              "type": "string"
+            },
+            {
+              "id": "e02",
+              "name": "e02",
+              "value": "={{ JSON.stringify($json.customer.address.city) }}",
+              "type": "string"
+            },
+            {
+              "id": "e03",
+              "name": "e03",
+              "value": "={{ JSON.stringify($json.missing ?? 'Unknown') }}",
+              "type": "string"
+            },
+            {
+              "id": "e04",
+              "name": "e04",
+              "value": "={{ JSON.stringify($json.count ?? 10) }}",
+              "type": "string"
+            },
+            {
+              "id": "e05",
+              "name": "e05",
+              "value": "={{ JSON.stringify($json.enabled ?? true) }}",
+              "type": "string"
+            },
+            {
+              "id": "e06",
+              "name": "e06",
+              "value": "={{ JSON.stringify($json.empty || 'Untitled') }}",
+              "type": "string"
+            },
+            {
+              "id": "e07",
+              "name": "e07",
+              "value": "={{ JSON.stringify($json.customer.phone?.number ?? 'Not supplied') }}",
+              "type": "string"
+            },
+            {
+              "id": "e08",
+              "name": "e08",
+              "value": "={{ JSON.stringify($('Sample input').first().json.customer.name) }}",
+              "type": "string"
+            },
+            {
+              "id": "e09",
+              "name": "e09",
+              "value": "={{ JSON.stringify($input.first().json.body.post_id) }}",
+              "type": "string"
+            },
+            {
+              "id": "e10",
+              "name": "e10",
+              "value": "={{ JSON.stringify($input.all().length) }}",
+              "type": "string"
+            },
+            {
+              "id": "e11",
+              "name": "e11",
+              "value": "={{ JSON.stringify($json.name.trim()) }}",
+              "type": "string"
+            },
+            {
+              "id": "e12",
+              "name": "e12",
+              "value": "={{ JSON.stringify($json.email.trim().toLowerCase()) }}",
+              "type": "string"
+            },
+            {
+              "id": "e13",
+              "name": "e13",
+              "value": "={{ JSON.stringify($json.platform.toUpperCase()) }}",
+              "type": "string"
+            },
+            {
+              "id": "e14",
+              "name": "e14",
+              "value": "={{ JSON.stringify($json.slug.toLowerCase().replace(/\\s+/g, '-')) }}",
+              "type": "string"
+            },
+            {
+              "id": "e15",
+              "name": "e15",
+              "value": "={{ JSON.stringify($json.message.split(',').map(x => x.trim())) }}",
+              "type": "string"
+            },
+            {
+              "id": "e16",
+              "name": "e16",
+              "value": "={{ JSON.stringify($json.tags.join(', ')) }}",
+              "type": "string"
+            },
+            {
+              "id": "e17",
+              "name": "e17",
+              "value": "={{ JSON.stringify($json.slug.replace('Lab', 'Guide')) }}",
+              "type": "string"
+            },
+            {
+              "id": "e18",
+              "name": "e18",
+              "value": "={{ JSON.stringify($json.name.trim().slice(0, 3)) }}",
+              "type": "string"
+            },
+            {
+              "id": "e19",
+              "name": "e19",
+              "value": "={{ JSON.stringify($json.slug.includes('Workflow')) }}",
+              "type": "string"
+            },
+            {
+              "id": "e20",
+              "name": "e20",
+              "value": "={{ JSON.stringify($json.email.trim().toLowerCase() && encodeURIComponent($json.email.trim().toLowerCase())) }}",
+              "type": "string"
+            },
+            {
+              "id": "e21",
+              "name": "e21",
+              "value": "={{ JSON.stringify([...new Set($json.tags)]) }}",
+              "type": "string"
+            },
+            {
+              "id": "e22",
+              "name": "e22",
+              "value": "={{ JSON.stringify($json.items.filter(x => x.active === true)) }}",
+              "type": "string"
+            },
+            {
+              "id": "e23",
+              "name": "e23",
+              "value": "={{ JSON.stringify($json.items.map(x => x.name)) }}",
+              "type": "string"
+            },
+            {
+              "id": "e24",
+              "name": "e24",
+              "value": "={{ JSON.stringify($json.items.find(x => x.name === 'B')?.price ?? null) }}",
+              "type": "string"
+            },
+            {
+              "id": "e25",
+              "name": "e25",
+              "value": "={{ JSON.stringify($json.items.length) }}",
+              "type": "string"
+            },
+            {
+              "id": "e26",
+              "name": "e26",
+              "value": "={{ JSON.stringify($json.items.reduce((sum, x) => sum + x.price, 0)) }}",
+              "type": "string"
+            },
+            {
+              "id": "e27",
+              "name": "e27",
+              "value": "={{ JSON.stringify([...$json.numbers].sort((a, b) => a - b)) }}",
+              "type": "string"
+            },
+            {
+              "id": "e28",
+              "name": "e28",
+              "value": "={{ JSON.stringify($json.items.slice(0, 2)) }}",
+              "type": "string"
+            },
+            {
+              "id": "e29",
+              "name": "e29",
+              "value": "={{ JSON.stringify($json.customer && Object.keys($json.customer)) }}",
+              "type": "string"
+            },
+            {
+              "id": "e30",
+              "name": "e30",
+              "value": "={{ JSON.stringify(JSON.stringify($json.body)) }}",
+              "type": "string"
+            },
+            {
+              "id": "e31",
+              "name": "e31",
+              "value": "={{ JSON.stringify(Number($json.amount)) }}",
+              "type": "string"
+            },
+            {
+              "id": "e32",
+              "name": "e32",
+              "value": "={{ JSON.stringify(Number($json.amount).toFixed(2)) }}",
+              "type": "string"
+            },
+            {
+              "id": "e33",
+              "name": "e33",
+              "value": "={{ JSON.stringify(Math.ceil(Number($json.amount))) }}",
+              "type": "string"
+            },
+            {
+              "id": "e34",
+              "name": "e34",
+              "value": "={{ JSON.stringify($json.status === 'paid' ? 'Ready' : 'Review') }}",
+              "type": "string"
+            },
+            {
+              "id": "e35",
+              "name": "e35",
+              "value": "={{ JSON.stringify($json.status === 'paid' && $json.enabled === true) }}",
+              "type": "string"
+            },
+            {
+              "id": "e36",
+              "name": "e36",
+              "value": "={{ JSON.stringify(['paid', 'pending'].includes($json.status)) }}",
+              "type": "string"
+            },
+            {
+              "id": "e37",
+              "name": "e37",
+              "value": "={{ JSON.stringify(Number.isFinite(Number($json.amount))) }}",
+              "type": "string"
+            },
+            {
+              "id": "e38",
+              "name": "e38",
+              "value": "={{ JSON.stringify([$json.body.post_id, $json.platform, $json.account_id].join(':')) }}",
+              "type": "string"
+            },
+            {
+              "id": "e39",
+              "name": "e39",
+              "value": "={{ JSON.stringify(({post_id:$json.body.post_id,platform:$json.platform})) }}",
+              "type": "string"
+            },
+            {
+              "id": "e40",
+              "name": "e40",
+              "value": "={{ JSON.stringify($jmespath($json, 'items[*].name')) }}",
+              "type": "string"
+            },
+            {
+              "id": "e41",
+              "name": "e41",
+              "value": "={{ JSON.stringify($jmespath($json, 'items[?active == `true`].name')) }}",
+              "type": "string"
+            },
+            {
+              "id": "e42",
+              "name": "e42",
+              "value": "={{ JSON.stringify($jmespath($json, 'sum(items[*].price)')) }}",
+              "type": "string"
+            },
+            {
+              "id": "e43",
+              "name": "e43",
+              "value": "={{ JSON.stringify(DateTime.fromISO($json.date, {zone:\"utc\"}).toISODate()) }}",
+              "type": "string"
+            },
+            {
+              "id": "e44",
+              "name": "e44",
+              "value": "={{ JSON.stringify(DateTime.fromISO($json.date, {zone:\"utc\"}).toFormat(\"dd LLL yyyy\")) }}",
+              "type": "string"
+            },
+            {
+              "id": "e45",
+              "name": "e45",
+              "value": "={{ JSON.stringify(DateTime.fromISO($json.date).setZone(\"Asia/Kolkata\").toFormat(\"HH:mm\")) }}",
+              "type": "string"
+            },
+            {
+              "id": "e46",
+              "name": "e46",
+              "value": "={{ JSON.stringify(DateTime.fromISO($json.date, {zone:\"utc\"}).plus({days:7}).toISODate()) }}",
+              "type": "string"
+            },
+            {
+              "id": "e47",
+              "name": "e47",
+              "value": "={{ JSON.stringify(DateTime.fromISO($json.date, {zone:\"utc\"}).minus({days:1}).toISODate()) }}",
+              "type": "string"
+            },
+            {
+              "id": "e48",
+              "name": "e48",
+              "value": "={{ JSON.stringify(DateTime.fromFormat($json.localDate, \"dd/MM/yyyy\", {zone:\"utc\"}).toISODate()) }}",
+              "type": "string"
+            },
+            {
+              "id": "e49",
+              "name": "e49",
+              "value": "={{ JSON.stringify(DateTime.fromSeconds($json.unix, {zone:\"utc\"}).toISODate()) }}",
+              "type": "string"
+            },
+            {
+              "id": "e50",
+              "name": "e50",
+              "value": "={{ JSON.stringify(DateTime.fromISO(\"not-a-date\").isValid) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "verify",
+      "name": "Check expected results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const expected = [{\"id\":\"e01\",\"expected\":\"Ada\"},{\"id\":\"e02\",\"expected\":\"London\"},{\"id\":\"e03\",\"expected\":\"Unknown\"},{\"id\":\"e04\",\"expected\":0},{\"id\":\"e05\",\"expected\":false},{\"id\":\"e06\",\"expected\":\"Untitled\"},{\"id\":\"e07\",\"expected\":\"Not supplied\"},{\"id\":\"e08\",\"expected\":\"Ada\"},{\"id\":\"e09\",\"expected\":42},{\"id\":\"e10\",\"expected\":1},{\"id\":\"e11\",\"expected\":\"Ada Lovelace\"},{\"id\":\"e12\",\"expected\":\"ada@example.com\"},{\"id\":\"e13\",\"expected\":\"LINKEDIN\"},{\"id\":\"e14\",\"expected\":\"workflow-lab\"},{\"id\":\"e15\",\"expected\":[\"red\",\"green\",\"blue\"]},{\"id\":\"e16\",\"expected\":\"n8n, api, n8n\"},{\"id\":\"e17\",\"expected\":\"Workflow Guide\"},{\"id\":\"e18\",\"expected\":\"Ada\"},{\"id\":\"e19\",\"expected\":true},{\"id\":\"e20\",\"expected\":\"ada%40example.com\"},{\"id\":\"e21\",\"expected\":[\"n8n\",\"api\"]},{\"id\":\"e22\",\"expected\":[{\"name\":\"A\",\"active\":true,\"price\":10},{\"name\":\"C\",\"active\":true,\"price\":5}]},{\"id\":\"e23\",\"expected\":[\"A\",\"B\",\"C\"]},{\"id\":\"e24\",\"expected\":20},{\"id\":\"e25\",\"expected\":3},{\"id\":\"e26\",\"expected\":35},{\"id\":\"e27\",\"expected\":[1,2,3]},{\"id\":\"e28\",\"expected\":[{\"name\":\"A\",\"active\":true,\"price\":10},{\"name\":\"B\",\"active\":false,\"price\":20}]},{\"id\":\"e29\",\"expected\":[\"name\",\"address\"]},{\"id\":\"e30\",\"expected\":\"{\\\"post_id\\\":42}\"},{\"id\":\"e31\",\"expected\":12.5},{\"id\":\"e32\",\"expected\":\"12.50\"},{\"id\":\"e33\",\"expected\":13},{\"id\":\"e34\",\"expected\":\"Ready\"},{\"id\":\"e35\",\"expected\":false},{\"id\":\"e36\",\"expected\":true},{\"id\":\"e37\",\"expected\":true},{\"id\":\"e38\",\"expected\":\"42:linkedin:demo\"},{\"id\":\"e39\",\"expected\":{\"post_id\":42,\"platform\":\"linkedin\"}},{\"id\":\"e40\",\"expected\":[\"A\",\"B\",\"C\"]},{\"id\":\"e41\",\"expected\":[\"A\",\"C\"]},{\"id\":\"e42\",\"expected\":35},{\"id\":\"e43\",\"expected\":\"2026-10-08\"},{\"id\":\"e44\",\"expected\":\"08 Oct 2026\"},{\"id\":\"e45\",\"expected\":\"16:00\"},{\"id\":\"e46\",\"expected\":\"2026-10-15\"},{\"id\":\"e47\",\"expected\":\"2026-10-07\"},{\"id\":\"e48\",\"expected\":\"2026-10-08\"},{\"id\":\"e49\",\"expected\":\"2026-10-08\"},{\"id\":\"e50\",\"expected\":false}];\nconst actual=$input.first().json;\nconst results=expected.map(c=>{let value;try{value=JSON.parse(actual[c.id]);}catch{value=actual[c.id];}return {...c,actual:value,pass:JSON.stringify(value)===JSON.stringify(c.expected)};});\nreturn [{json:{total:results.length,passed:results.filter(r=>r.pass).length,failed:results.filter(r=>!r.pass).length,results}}];"
+      }
+    }
+  ],
+  "connections": {
+    "Run lab": {
+      "main": [
+        [
+          {
+            "node": "Sample input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sample input": {
+      "main": [
+        [
+          {
+            "node": "Evaluate 50 expressions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluate 50 expressions": {
+      "main": [
+        [
+          {
+            "node": "Check expected results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Etc/UTC"
+  },
+  "active": false,
+  "pinData": {},
+  "tags": []
+}

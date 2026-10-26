@@ -1,0 +1,57 @@
+[
+  {
+    "case": "one product",
+    "data": "<catalog><product sku=\"0012\"><name>Desk lamp</name><price>12.50</price></product></catalog>",
+    "expectedCount": 1,
+    "expectedErrors": 0,
+    "expectedSku": "0012"
+  },
+  {
+    "case": "two products",
+    "data": "<catalog><product sku=\"0012\"><name>Desk lamp</name><price>12.50</price></product><product sku=\"0013\"><name>Mug</name><price>0</price></product></catalog>",
+    "expectedCount": 2,
+    "expectedErrors": 0,
+    "expectedSku": "0012"
+  },
+  {
+    "case": "empty catalog",
+    "data": "<catalog/>",
+    "expectedCount": 0,
+    "expectedErrors": 0
+  },
+  {
+    "case": "attribute and child share a name",
+    "data": "<catalog><product sku=\"A-01\"><sku>supplier-label</sku><name>Notebook</name><price>4.00</price></product></catalog>",
+    "expectedCount": 1,
+    "expectedErrors": 0,
+    "expectedSku": "A-01"
+  },
+  {
+    "case": "leading zeros stay strings",
+    "data": "<catalog><product sku=\"000007\"><name>Cable</name><price>0.50</price></product></catalog>",
+    "expectedCount": 1,
+    "expectedErrors": 0,
+    "expectedSku": "000007"
+  },
+  {
+    "case": "CDATA and escaped text",
+    "data": "<catalog><product sku=\"U-01\"><name><![CDATA[Café <gift>]]></name><price>9.95</price><note>Tea &amp; coffee</note></product></catalog>",
+    "expectedCount": 1,
+    "expectedErrors": 0,
+    "expectedSku": "U-01"
+  },
+  {
+    "case": "missing price is review",
+    "data": "<catalog><product sku=\"M-01\"><name>Unpriced item</name></product></catalog>",
+    "expectedCount": 1,
+    "expectedErrors": 1,
+    "expectedSku": "M-01"
+  },
+  {
+    "case": "invalid price is review",
+    "data": "<catalog><product sku=\"I-01\"><name>Bad price</name><price>12,50</price></product></catalog>",
+    "expectedCount": 1,
+    "expectedErrors": 1,
+    "expectedSku": "I-01"
+  }
+]

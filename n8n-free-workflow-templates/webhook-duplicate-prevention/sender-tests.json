@@ -1,0 +1,114 @@
+{
+  "name": "OperantSolo webhook replay - 16 live HTTP checks",
+  "nodes": [
+    {
+      "id": "start",
+      "name": "Run replay tests",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "parameters": {},
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "id": "fixtures",
+      "name": "16 replay fixtures",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "const runId='run-'+Date.now();const cases=[[\"valid\",\"a\",\"demo-order\",1,\"\",1,200,\"applied\",1],[\"duplicate\",\"a\",\"demo-order\",1,\"\",1,200,\"duplicate\",1],[\"newer\",\"b\",\"demo-order\",3,\"\",1,200,\"applied\",2],[\"older arrives last\",\"c\",\"demo-order\",2,\"\",1,200,\"stale\",2],[\"missing ID\",\"\",\"demo-order\",4,\"\",1,400,\"reject\",2],[\"429 first attempt\",\"rate\",\"demo-rate\",1,\"rate_limit\",1,429,\"retry\",2],[\"429 next attempt\",\"rate\",\"demo-rate\",1,\"rate_limit\",2,200,\"applied\",3],[\"503 first attempt\",\"busy\",\"demo-busy\",1,\"unavailable\",1,503,\"retry\",3],[\"503 next attempt\",\"busy\",\"demo-busy\",1,\"unavailable\",2,200,\"applied\",4],[\"ambiguous mock write\",\"unknown\",\"demo-unknown\",1,\"ambiguous\",1,202,\"review\",5],[\"ambiguous retry\",\"unknown\",\"demo-unknown\",1,\"ambiguous\",2,202,\"review\",5],[\"reconcile mock write\",\"unknown\",\"demo-unknown\",1,\"ambiguous\",2,200,\"reconciled\",5],[\"manual replay\",\"a\",\"demo-order\",1,\"\",2,200,\"duplicate\",5],[\"ID reused for changed payload\",\"a\",\"demo-order\",4,\"\",1,409,\"conflict\",5],[\"malformed version\",\"bad\",\"demo-bad\",\"4\",\"\",1,400,\"reject\",5],[\"retry budget exhausted\",\"stop\",\"demo-stop\",1,\"\",4,422,\"stop\",5]];return cases.map((x,index)=>({json:{lab:'operantsolo-fictional-v1',runId,case:x[0],eventId:x[1]?'evt-'+x[1]:'',entityId:x[2],version:x[3],scenario:x[4],attempt:x[5],reconcile:index===11,expected:{status:x[6],decision:x[7],actions:x[8]}}}));"
+      },
+      "position": [
+        470,
+        300
+      ]
+    },
+    {
+      "id": "http",
+      "name": "POST one fixture per second",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "parameters": {
+        "method": "POST",
+        "url": "https://YOUR-N8N-HOST/webhook/operantsolo-replay-lab-20261013-7d43b9",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 1000
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 10000
+        }
+      },
+      "position": [
+        740,
+        300
+      ]
+    },
+    {
+      "id": "assert",
+      "name": "Compare observed results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "const fixtures=$('16 replay fixtures').all();const responses=$input.all();const results=responses.map((i,index)=>{const b=i.json.body||{};const e=fixtures[index].json.expected;return {case:fixtures[index].json.case,status:i.json.statusCode,decision:b.decision,actions:b.actions,expected:e,retryAfter:i.json.headers?.['retry-after'],executionId:b.executionId,pass:i.json.statusCode===e.status&&b.decision===e.decision&&b.actions===e.actions&&(![429,503].includes(e.status)||String(i.json.headers?.['retry-after'])==='1')};});return [{json:{scope:'Live n8n HTTP requests to a fictional sequential receiver; static data, mock actions and simulated failures',runId:fixtures[0].json.runId,cases:results.length,passed:results.filter(r=>r.pass).length,failed:results.filter(r=>!r.pass).length,results}}];"
+      },
+      "position": [
+        1050,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Run replay tests": {
+      "main": [
+        [
+          {
+            "node": "16 replay fixtures",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "16 replay fixtures": {
+      "main": [
+        [
+          {
+            "node": "POST one fixture per second",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST one fixture per second": {
+      "main": [
+        [
+          {
+            "node": "Compare observed results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

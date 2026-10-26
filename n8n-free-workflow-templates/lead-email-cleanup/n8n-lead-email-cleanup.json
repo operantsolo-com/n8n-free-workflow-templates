@@ -1,0 +1,98 @@
+{
+  "name": "OperantSolo - Clean Lead Emails and Flag Duplicates - Demo",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "os-manual",
+      "name": "Run demo",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const leads = [\n  {lead_id:'lead-001', name:'Alex', email:' Alex@Cedar.example '},\n  {lead_id:'lead-002', name:'Alex duplicate', email:'alex@cedar.example'},\n  {lead_id:'lead-003', name:'Morgan', email:''},\n  {lead_id:'lead-004', name:'Sam', email:'not-an-email'},\n  {lead_id:'lead-005', name:'Taylor', email:'taylor@cedar.example'}\n];\nreturn leads.map(json => ({json}));"
+      },
+      "id": "os-fixture",
+      "name": "Sample leads",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const seen = new Set();\nreturn $input.all().map((item, index) => {\n  const raw = item.json.email;\n  const email = typeof raw === 'string' ? raw.trim().toLowerCase() : '';\n  let status = 'ready';\n  let reason = 'first_valid_email_in_batch';\n  if (!email) { status = 'review'; reason = 'missing_email'; }\n  else if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {\n    status = 'review'; reason = 'invalid_email_format';\n  } else if (seen.has(email)) { status = 'duplicate'; reason = 'email_already_in_batch'; }\n  else { seen.add(email); }\n  return { json: {...item.json, original_email: raw ?? null, email, status, reason}, pairedItem: {item:index} };\n});"
+      },
+      "id": "os-clean",
+      "name": "Clean and flag emails",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const rows = $input.all().map(item => item.json);\nconst expected = ['ready','duplicate','review','review','ready'];\nif (rows.length !== expected.length) throw new Error('Expected 5 demo records');\nrows.forEach((row, i) => {\n  if (row.status !== expected[i]) throw new Error('Wrong status for demo record ' + (i + 1));\n});\nif (rows[0].email !== 'alex@cedar.example') throw new Error('Normalization failed');\nif (rows[2].reason !== 'missing_email' || rows[3].reason !== 'invalid_email_format') throw new Error('Review checks failed');\nreturn [{json:{test_result:'PASS', input_records:rows.length, ready:rows.filter(r=>r.status==='ready').length, duplicates:rows.filter(r=>r.status==='duplicate').length, review:rows.filter(r=>r.status==='review').length, scope:'Current batch only. No CRM writes or persistent duplicate history.', records:rows}}];"
+      },
+      "id": "os-verify",
+      "name": "Check demo results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Run demo": {
+      "main": [
+        [
+          {
+            "node": "Sample leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sample leads": {
+      "main": [
+        [
+          {
+            "node": "Clean and flag emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean and flag emails": {
+      "main": [
+        [
+          {
+            "node": "Check demo results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "pinData": {}
+}
