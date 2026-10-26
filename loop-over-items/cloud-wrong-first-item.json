@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-17",
+  "environment": "n8n Cloud",
+  "version": "2.44.3",
+  "batchSize": 2,
+  "condition": "Use the first source record for every returned item",
+  "output": [
+    {
+      "passed": false,
+      "valid_input_ids": true,
+      "expected_count": 5,
+      "returned_count": 5,
+      "returned_ids": [
+        "R001",
+        "R001",
+        "R001",
+        "R001",
+        "R001"
+      ],
+      "missing_ids": [
+        "R002",
+        "R003",
+        "R004",
+        "R005"
+      ],
+      "duplicate_ids": [
+        "R001"
+      ],
+      "unexpected_ids": []
+    }
+  ]
+}

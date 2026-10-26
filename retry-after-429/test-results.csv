@@ -1,0 +1,19 @@
+case,decision,waitSeconds,source,payloadPreserved,pass
+seconds header,retry,31,retry_after_seconds,True,True
+mixed-case header,retry,6,retry_after_seconds,True,True
+HTTP date,retry,31,retry_after_http_date,True,True
+server clock behind,retry,41,retry_after_http_date,True,True
+past date,retry,2,retry_after_http_date,True,True
+zero seconds,retry,2,retry_after_seconds,True,True
+missing header,retry,3,fallback_backoff,True,True
+malformed header,retry,3,fallback_backoff,True,True
+negative header,retry,3,fallback_backoff,True,True
+fractional header,retry,3,fallback_backoff,True,True
+second attempt,retry,5,fallback_backoff,True,True
+third attempt,retry,9,fallback_backoff,True,True
+attempt cap,stop,0,,True,True
+long provider wait,defer,3601,retry_after_seconds,True,True
+unsafe write,review,0,,True,True
+auth error,stop,0,,True,True
+server error outside scope,stop,0,,True,True
+success,success,0,,True,True

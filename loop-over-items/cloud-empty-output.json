@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-17",
+  "environment": "n8n Cloud",
+  "version": "2.44.3",
+  "batchSize": 2,
+  "sourceIds": [
+    "R001",
+    "R002",
+    "R003",
+    "R004",
+    "R005"
+  ],
+  "condition": "Return [] when the batch starts with R003",
+  "processingRuns": 2,
+  "loopRuns": 2,
+  "checkerRan": false,
+  "observedMessage": "No output data returned",
+  "interpretation": "The fixed list did not finish. No passing completeness summary was produced."
+}
