@@ -5,6 +5,7 @@ Free n8n workflow downloads you can import in one click. Every workflow here was
 - No credentials, no paid APIs, no customer data. Samples use fictional records.
 - Each workflow imports into a **new** n8n workflow (More actions > Import from file).
 - Original files by [OperantSolo](https://operantsolo.com/), MIT licensed.
+- Need only the PDF step? Use the [free HTML to PDF tool for n8n](https://operantsolo.com/n8n-html-to-pdf-tool/): try it in your browser, then copy the Code node.
 
 ## Workflows
 
@@ -18,7 +19,7 @@ Free n8n workflow downloads you can import in one click. Every workflow here was
 | [`retry-after-429`](retry-after-429) | Handle HTTP 429 using the Retry-After header. 18 policy checks passed, plus a loop demo with a real Wait. | n8n Cloud 2.43.0, 7 Oct 2026 | [Guide](https://operantsolo.com/n8n-rate-limit-retry-after/?utm_source=github&utm_medium=repo) |
 | [`webhook-duplicate-prevention`](webhook-duplicate-prevention) | Webhook receiver and replay sender for testing duplicate deliveries. Baseline only, not production-safe. | see `test-report.md` | [Guide](https://operantsolo.com/n8n-webhook-duplicate-prevention/?utm_source=github&utm_medium=repo) |
 | [`lead-email-cleanup`](lead-email-cleanup) | Clean and flag lead emails: lowercase, trim, format check, duplicate flag. Demo: 5 in, 2 ready, 1 duplicate, 2 to review. | see folder README | [Guide](https://operantsolo.com/n8n-lead-email-cleanup/?utm_source=github&utm_medium=repo) |
-| [`html-to-pdf`](html-to-pdf) | Turn simple HTML into a PDF inside a Code node, with no external service. Reads the PDF back and checks the text. | n8n Cloud, 26 Oct 2026 | See folder README |
+| [`html-to-pdf`](html-to-pdf) | Turn simple HTML into a PDF inside a Code node, with no external service. Reads the PDF back and checks the text. | n8n Cloud, 26 Oct 2026 | [Try it in your browser](https://operantsolo.com/n8n-html-to-pdf-tool/) |
 
 More downloads and guides: https://operantsolo.com/free-n8n-workflows/
 
