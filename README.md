@@ -18,6 +18,7 @@ Free n8n workflow downloads you can import in one click. Every workflow here was
 | [`retry-after-429`](retry-after-429) | Handle HTTP 429 using the Retry-After header. 18 policy checks passed, plus a loop demo with a real Wait. | n8n Cloud 2.43.0, 7 Oct 2026 | [Guide](https://operantsolo.com/n8n-rate-limit-retry-after/?utm_source=github&utm_medium=repo) |
 | [`webhook-duplicate-prevention`](webhook-duplicate-prevention) | Webhook receiver and replay sender for testing duplicate deliveries. Baseline only, not production-safe. | see `test-report.md` | [Guide](https://operantsolo.com/n8n-webhook-duplicate-prevention/?utm_source=github&utm_medium=repo) |
 | [`lead-email-cleanup`](lead-email-cleanup) | Clean and flag lead emails: lowercase, trim, format check, duplicate flag. Demo: 5 in, 2 ready, 1 duplicate, 2 to review. | see folder README | [Guide](https://operantsolo.com/n8n-lead-email-cleanup/?utm_source=github&utm_medium=repo) |
+| [`html-to-pdf`](html-to-pdf) | Turn simple HTML into a PDF inside a Code node, with no external service. Reads the PDF back and checks the text. | n8n Cloud, 26 Oct 2026 | See folder README |
 
 More downloads and guides: https://operantsolo.com/free-n8n-workflows/
 
